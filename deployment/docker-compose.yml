@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: docker.io/library/postgres:latest
+    container_name: stucon_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rexdy
+      POSTGRES_PASSWORD: yosup
+      POSTGRES_DB: tmpdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./psql_init.d:/docker-entrypoint-initdb.d/
+
+  redis:
+    image: docker.io/library/redis:latest
+    container_name: stucon_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./redis:/data
+
+networks:
+  podman:
+    external: true
+
