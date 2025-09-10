@@ -9,6 +9,7 @@ import (
 
 func main(){
 	s, err := internal.InitConn()
+	defer s.CloseConn()
 	if err != nil {
 		fmt.Println("InitConn Failed", err)
 		return
@@ -16,7 +17,9 @@ func main(){
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/user", s.LoginHandler)
+	mux.HandleFunc("/api/user/login", s.LogInHandler)
+	mux.HandleFunc("/api/user/logout", s.LogOutHandler)
+	mux.HandleFunc("/api/user/signup", s.SignUpHandler)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Allowed", http.StatusForbidden)
 	})

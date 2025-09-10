@@ -9,14 +9,15 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/redis/go-redis/v9"
 )
 
-type RequestJSON struct {
+type LogInRequestJSON struct {
 	Email string `json:"email"`
 	PasswordHash string `json:"passwordHash"`
 }
 
-type ResponseJSON struct {
+type LogInResponseJSON struct {
 	Valid bool `json:"valid"`
 	Token string `json:"token"`
 }
@@ -31,7 +32,7 @@ func generateSessionToken(n int) (token string, err error) {
 	return hex.EncodeToString(b), nil
 }
 
-func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request){
+func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 
 	if r.Method != http.MethodPut {
 		http.Error(w, "Wrong Method", http.StatusMethodNotAllowed)
@@ -48,12 +49,23 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	var reqJson RequestJSON
+	var reqJson LogInRequestJSON
 	err = json.NewDecoder(r.Body).Decode(&reqJson)
 	if err != nil {
 		http.Error(w, "JSON Decoder Error", http.StatusInternalServerError)
 		return
 	}
+
+	tokenFromRedis, err := rDB.Get(s.Ctx, reqJson.Email).Result()
+	if err != redis.Nil {
+		respJson := LogInResponseJSON{
+			Valid: true,
+			Token: tokenFromRedis,
+		}
+		json.NewEncoder(w).Encode(respJson)
+		return
+	}
+
 
 	pwdQuery := "SELECT password_hash FROM normal_users WHERE email=($1)"
 	result, err := psqlDB.Query(pwdQuery, reqJson.Email)
@@ -91,13 +103,13 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	err = rDB.Set(s.Ctx, token, reqJson.Email, time.Hour).Err()
+	err = rDB.Set(s.Ctx, reqJson.Email, token, time.Hour).Err()
 	if err != nil {	
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	respJson := ResponseJSON{
+	respJson := LogInResponseJSON{
 		Valid: true,
 		Token: token,
 	}
