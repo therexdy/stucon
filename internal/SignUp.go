@@ -72,7 +72,7 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	
-	err = rDB.Set(s.Ctx, token, reqJson.Email, time.Hour).Err()
+	err = rDB.Set(s.Ctx, token, reqJson.Email, 24*time.Hour).Err()
 	if err != nil {
 		http.Error(w, "Could not generate token", http.StatusInternalServerError)
 		return

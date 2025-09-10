@@ -103,7 +103,7 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	err = rDB.Set(s.Ctx, reqJson.Email, token, time.Hour).Err()
+	err = rDB.Set(s.Ctx, reqJson.Email, token, 24*time.Hour).Err()
 	if err != nil {	
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
