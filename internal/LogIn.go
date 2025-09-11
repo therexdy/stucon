@@ -22,6 +22,11 @@ type LogInResponseJSON struct {
 	Token string `json:"token"`
 }
 
+type ValidateRequestJSON struct {
+	Email string `json:"email"`
+	Token string `json:"token"`
+}
+
 func generateSessionToken(n int) (token string, err error) {
 	b := make([]byte, n)
 
@@ -45,7 +50,7 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 	err := psqlDB.Ping()
 	if err != nil {
 		fmt.Println("PSQL DB Ping Failed")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error" + err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -90,7 +95,7 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	pwdMatch, err := VerifyPassword(pwdHashFromResult[0], reqJson.Password)
+	pwdMatch, err := VerifyPassword(reqJson.Password, pwdHashFromResult[0])
 	if err != nil {
 		http.Error(w, "pwd Verify Error", http.StatusInternalServerError)
 	}
@@ -117,9 +122,39 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 		Token: token,
 	}
 
+	fmt.Println("Logged in from " + r.Host)
 	err = json.NewEncoder(w).Encode(respJson)
 	if err != nil {
 		http.Error(w, "JSON Encoder Error", http.StatusInternalServerError)
 		return
 	}
 }
+
+
+func (s *Server) ValidateSession(w http.ResponseWriter, r *http.Request){
+
+	if r.Method != http.MethodPut {
+		http.Error(w, "Wrong Method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	rDB := s.RedisDB
+
+
+	var reqJson ValidateRequestJSON
+	err := json.NewDecoder(r.Body).Decode(&reqJson)
+	if err != nil {
+		http.Error(w, "JSON Decoder Error", http.StatusInternalServerError)
+		return
+	}
+
+	tokenFromRedis, err := rDB.Get(s.Ctx, reqJson.Email).Result()
+	if err == redis.Nil {
+		http.Error(w, "Session Token Invalid" + tokenFromRedis, http.StatusForbidden)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	
+}
+

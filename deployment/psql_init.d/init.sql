@@ -1,3 +1,7 @@
+CREATE DATABASE stucon ;
+
+\c stucon
+
 CREATE TABLE schemes (
     scheme_id SERIAL PRIMARY KEY,
     scheme_code VARCHAR(16) UNIQUE NOT NULL,
@@ -29,7 +33,7 @@ CREATE TABLE normal_users (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
     email VARCHAR(128) UNIQUE NOT NULL,
-    password_hash CHAR(60) NOT NULL, -- for bcrypt/argon2
+    password_hash TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -41,4 +45,17 @@ CREATE TABLE materials (
     file_path TEXT NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE USER appuser WITH PASSWORD 'GTAC';
+
+GRANT ALL PRIVILEGES ON DATABASE stucon TO appuser;
+
+GRANT ALL PRIVILEGES ON SCHEMA public TO appuser;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO appuser;
+
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO appuser;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO appuser;
 

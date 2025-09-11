@@ -61,6 +61,7 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 	passwordHash, err := HashPassword(reqJson.Password)
 	if err != nil {
 		http.Error(w, "pwd Hash Error", http.StatusInternalServerError)
+		return
 	}
 
 	insertQuery := "INSERT INTO normal_users (name, email, password_hash) VALUES ($1, $2, $3)"

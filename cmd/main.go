@@ -18,6 +18,7 @@ func main(){
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/user/login", s.LogInHandler)
+	mux.HandleFunc("/api/user/validate", s.ValidateSession)
 	mux.HandleFunc("/api/user/logout", s.LogOutHandler)
 	mux.HandleFunc("/api/user/signup", s.SignUpHandler)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
