@@ -12,7 +12,7 @@ import (
 type SignUpRequestJSON struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	PasswordHash string `json:"passwordHash"`
+	Password string `json:"password"`
 }
 
 type SignUpResponseJSON struct {
@@ -58,8 +58,13 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
+	passwordHash, err := HashPassword(reqJson.Password)
+	if err != nil {
+		http.Error(w, "pwd Hash Error", http.StatusInternalServerError)
+	}
+
 	insertQuery := "INSERT INTO normal_users (name, email, password_hash) VALUES ($1, $2, $3)"
-	result, err := psqlDB.Exec(insertQuery, reqJson.Name, reqJson.Email, reqJson.PasswordHash)
+	result, err := psqlDB.Exec(insertQuery, reqJson.Name, reqJson.Email, passwordHash)
 
 	if rowsAffected, _ := result.RowsAffected(); rowsAffected != 1 {
 		http.Error(w, "RowsAffected not equal to 1", http.StatusInternalServerError)

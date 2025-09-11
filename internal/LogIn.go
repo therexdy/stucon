@@ -14,7 +14,7 @@ import (
 
 type LogInRequestJSON struct {
 	Email string `json:"email"`
-	PasswordHash string `json:"passwordHash"`
+	Password string `json:"password"`
 }
 
 type LogInResponseJSON struct {
@@ -90,9 +90,12 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	pwdHashFromDb := pwdHashFromResult[0]
+	pwdMatch, err := VerifyPassword(pwdHashFromResult[0], reqJson.Password)
+	if err != nil {
+		http.Error(w, "pwd Verify Error", http.StatusInternalServerError)
+	}
 
-	if pwdHashFromDb != reqJson.PasswordHash {
+	if !pwdMatch {
 		http.Error(w, "pwd Hash did not match", http.StatusInternalServerError)
 		return
 	}
