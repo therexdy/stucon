@@ -18,6 +18,7 @@ type LogInRequestJSON struct {
 }
 
 type LogInResponseJSON struct {
+	UserId string `json:"userId"`
 	Valid bool `json:"valid"`
 	Token string `json:"token"`
 }
@@ -72,7 +73,7 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 
-	pwdQuery := "SELECT password_hash FROM users WHERE email=($1)"
+	pwdQuery := "SELECT user_id, password_hash FROM users WHERE email=($1)"
 	result, err := psqlDB.Query(pwdQuery, reqJson.Email)
 	if err != nil {
 		http.Error(w, "Query Error: " + err.Error(), http.StatusInternalServerError)
@@ -81,13 +82,13 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 	defer result.Close()
 
 	var pwdHashFromResult []string
+	var userId, password_hash string
 	for result.Next() {
-		var temp string
-		if err = result.Scan(&temp); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err = result.Scan(&userId, &password_hash); err != nil {
+			http.Error(w, "SQL Result Scan Error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		pwdHashFromResult = append(pwdHashFromResult, temp)
+		pwdHashFromResult = append(pwdHashFromResult, password_hash)
 	}
 
 	if len(pwdHashFromResult) != 1 {
@@ -119,10 +120,11 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 
 	respJson := LogInResponseJSON{
 		Valid: true,
+		UserId: userId,
 		Token: token,
 	}
 
-	fmt.Println("Logged in from " + r.Host)
+	fmt.Println("Logged in from " + r.RemoteAddr)
 	err = json.NewEncoder(w).Encode(respJson)
 	if err != nil {
 		http.Error(w, "JSON Encoder Error", http.StatusInternalServerError)
