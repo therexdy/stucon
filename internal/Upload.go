@@ -55,10 +55,16 @@ func (s *Server) UploadHandler(w http.ResponseWriter, r *http.Request){
 	params.title = q.Get("title")
 	params.fileType = q.Get("file_type")
 
+	switch "" {
+	case params.subjectId, params.branchId, params.schemeId, params.title, params.fileType:
+		http.Error(w, "Missing Params", http.StatusBadRequest)
+		return
+	}
+
 	preHash := params.schemeId+params.branchId+string(params.sem)+params.subjectId+string(params.userId)+params.title+params.fileType
 	hash := sha256.Sum256([]byte(preHash))
 
-	fileName := hex.EncodeToString(hash[:])
+	fileName := hex.EncodeToString(hash[:])+"."+params.fileType
 	
 	queryStr := `
 		INSERT INTO materials

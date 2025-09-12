@@ -22,6 +22,11 @@ func main(){
 	mux.HandleFunc("/api/user/logout", s.LogOutHandler)
 	mux.HandleFunc("/api/user/signup", s.SignUpHandler)
 	mux.HandleFunc("/api/explore", s.ExploreHandler)
+	mux.HandleFunc("/api/explore/getscheme", s.SchemeGetHandler)
+	mux.HandleFunc("/api/explore/getbranch", s.BranchGetHandler)
+	mux.HandleFunc("/api/explore/getsub", s.SubjectGetHandler)
+	mux.HandleFunc("/api/upload", s.UploadHandler)
+	mux.HandleFunc("/api/download", s.FileHandler)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Allowed", http.StatusForbidden)
 	})
