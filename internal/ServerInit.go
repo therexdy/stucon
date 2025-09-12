@@ -30,7 +30,7 @@ func InitConn() (s *Server, err error){
 	})
 
 	s.Minio , err = minio.New("localhost:9000", &minio.Options{
-		Creds:  credentials.NewStaticV4("accessId", "secretKey", ""),
+		Creds:  credentials.NewStaticV4("appuser", "GTAC@gtac", ""),
 		Secure: false,
 	})
 	if err != nil {
