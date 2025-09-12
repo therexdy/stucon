@@ -21,6 +21,7 @@ func main(){
 	mux.HandleFunc("/api/user/validate", s.ValidateSession)
 	mux.HandleFunc("/api/user/logout", s.LogOutHandler)
 	mux.HandleFunc("/api/user/signup", s.SignUpHandler)
+	mux.HandleFunc("/api/explore", s.ExploreHandler)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Allowed", http.StatusForbidden)
 	})

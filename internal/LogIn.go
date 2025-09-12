@@ -72,7 +72,7 @@ func (s *Server) LogInHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 
-	pwdQuery := "SELECT password_hash FROM normal_users WHERE email=($1)"
+	pwdQuery := "SELECT password_hash FROM users WHERE email=($1)"
 	result, err := psqlDB.Query(pwdQuery, reqJson.Email)
 	if err != nil {
 		http.Error(w, "Query Error: " + err.Error(), http.StatusInternalServerError)

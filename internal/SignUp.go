@@ -46,7 +46,7 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	var count int
-	countQuery := "SELECT COUNT(*) FROM normal_users WHERE email=($1)"
+	countQuery := "SELECT COUNT(*) FROM users WHERE email=($1)"
 	err = psqlDB.QueryRow(countQuery, reqJson.Email).Scan(&count)
 	if err != nil {
 		http.Error(w, "Query Error: " + err.Error(), http.StatusInternalServerError)
@@ -64,7 +64,7 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	insertQuery := "INSERT INTO normal_users (name, email, password_hash) VALUES ($1, $2, $3)"
+	insertQuery := "INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)"
 	result, err := psqlDB.Exec(insertQuery, reqJson.Name, reqJson.Email, passwordHash)
 
 	if rowsAffected, _ := result.RowsAffected(); rowsAffected != 1 {
