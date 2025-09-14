@@ -27,10 +27,11 @@ func main(){
 	mux.HandleFunc("/api/explore/getsub", s.SubjectGetHandler)
 	mux.HandleFunc("/api/upload", s.UploadHandler)
 	mux.HandleFunc("/api/download", s.FileHandler)
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Not Allowed", http.StatusForbidden)
-	})
-
+	mux.Handle("/", http.FileServer(http.Dir("../public")))
+//	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+//		http.Error(w, "Not Allowed", http.StatusForbidden)
+//	})
+	
 	port := "8080"
 	fmt.Println("Listening ", port)
 	http.ListenAndServe(":"+port, mux)

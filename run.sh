@@ -10,6 +10,10 @@ echo "Starting Containers"
 cd deployment
 podman-compose up -d
 cd ..
+echo "Cloning Repo:"
+cd ./public
+git clone https://github.com/Chiranthcs6/Website.git
+cd ..
 sleep 10
 echo "Starting the app"
 go run ./cmd/main.go
