@@ -82,7 +82,7 @@ func (s *Server) BranchGetHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	queryStr := "SELECT (branch_id, branch_name) FROM branches"
+	queryStr := "SELECT branch_id, branch_name FROM branches"
 	result, err := s.PSQLDB.Query(queryStr)
 	if err != nil {
 		http.Error(w, "Query Error", http.StatusInternalServerError)
