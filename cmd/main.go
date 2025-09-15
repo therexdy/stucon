@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"stucon.ramanalabs.in/internal"
 )
@@ -10,6 +13,20 @@ import (
 func main(){
 	s, err := internal.InitConn()
 	defer s.CloseConn()
+
+	sigs := make(chan os.Signal, 1)
+	done := make(chan struct{})
+
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+
+	go func(){
+		<-sigs
+		fmt.Println("Closing Connections to DBs")
+		s.CloseConn()
+		fmt.Println("Closed")
+		close(done)
+	} ()
+
 	if err != nil {
 		fmt.Println("InitConn Failed", err)
 		return
@@ -35,4 +52,7 @@ func main(){
 	port := "8080"
 	fmt.Println("Listening ", port)
 	http.ListenAndServe(":"+port, mux)
+
+	<-done
+
 }
