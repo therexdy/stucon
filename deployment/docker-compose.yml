@@ -38,6 +38,4 @@ services:
       - ./minio:/data
 
 networks:
-  podman:
-    external: true
-
+  stucon:

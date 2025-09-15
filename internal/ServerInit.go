@@ -20,16 +20,16 @@ type Server struct {
 func InitConn() (s *Server, err error){
 	s = &Server{}
 
-	s.PSQLDB, err = sql.Open("postgres", "postgres://appuser:GTAC@localhost:5432/stucon?sslmode=disable")
+	s.PSQLDB, err = sql.Open("postgres", "postgres://appuser:GTAC@stucon_postgres:5432/stucon?sslmode=disable")
 	if err != nil {
 		return nil, err
 	}
 
 	s.RedisDB = redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "stucon_redis:6379",
 	})
 
-	s.Minio , err = minio.New("localhost:9000", &minio.Options{
+	s.Minio , err = minio.New("stucon_minio:9000", &minio.Options{
 		Creds:  credentials.NewStaticV4("appuser", "GTAC@gtac", ""),
 		Secure: false,
 	})

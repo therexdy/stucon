@@ -1,0 +1,16 @@
+services: 
+  stucon_server:
+    build: .
+    container_name: stucon_server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./stucon:/app
+    working_dir: /app/cmd
+    command: go run main.go
+
+networks:
+  deployment_stucon:
+    external: true
+
