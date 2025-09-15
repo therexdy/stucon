@@ -12,25 +12,11 @@ import (
 
 func main(){
 	s, err := internal.InitConn()
-	defer s.CloseConn()
-
-	sigs := make(chan os.Signal, 1)
-	done := make(chan struct{})
-
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
-
-	go func(){
-		<-sigs
-		fmt.Println("Closing Connections to DBs")
-		s.CloseConn()
-		fmt.Println("Closed")
-		close(done)
-	} ()
-
 	if err != nil {
 		fmt.Println("InitConn Failed", err)
 		return
 	}
+	defer s.CloseConn()
 
 	mux := http.NewServeMux()
 
@@ -45,14 +31,12 @@ func main(){
 	mux.HandleFunc("/api/upload", s.UploadHandler)
 	mux.HandleFunc("/api/download", s.FileHandler)
 	mux.Handle("/", http.FileServer(http.Dir("../public")))
+
 //	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 //		http.Error(w, "Not Allowed", http.StatusForbidden)
-//	})
-	
+//	})	
+
 	port := "8080"
 	fmt.Println("Listening ", port)
 	http.ListenAndServe(":"+port, mux)
-
-	<-done
-
 }
