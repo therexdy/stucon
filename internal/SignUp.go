@@ -28,20 +28,20 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	psqlDB := s.PSQLDB
-	rDB := s.RedisDB
-
-	err := psqlDB.Ping()
+	var reqJson SignUpRequestJSON
+	err := json.NewDecoder(r.Body).Decode(&reqJson)
 	if err != nil {
-		fmt.Println("PSQL DB Ping Failed")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "JSON Decoder Error", http.StatusInternalServerError)
 		return
 	}
 
-	var reqJson SignUpRequestJSON
-	err = json.NewDecoder(r.Body).Decode(&reqJson)
+	psqlDB := s.PSQLDB
+	rDB := s.RedisDB
+
+	err = psqlDB.Ping()
 	if err != nil {
-		http.Error(w, "JSON Decoder Error", http.StatusInternalServerError)
+		fmt.Println("PSQL DB Ping Failed")
+		http.Error(w, "Internal Server Error" + err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -54,7 +54,7 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	if count != 0 {
-		http.Error(w, "Email already exists", http.StatusInternalServerError)
+		http.Error(w, "Email already exists.", http.StatusConflict)
 		return
 	}
 
@@ -74,13 +74,13 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 
 	token, err := generateSessionToken(128)
 	if err != nil {
-		http.Error(w, "Could not generate token", http.StatusInternalServerError)
+		http.Error(w, "Could not generate token "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	
 	err = rDB.Set(s.Ctx, token, reqJson.Email, 24*time.Hour).Err()
 	if err != nil {
-		http.Error(w, "Could not generate token", http.StatusInternalServerError)
+		http.Error(w, "Could not generate token "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -88,6 +88,7 @@ func (s *Server) SignUpHandler(w http.ResponseWriter, r *http.Request){
 	respJson.Valid = true
 	respJson.Token = token
 
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(respJson)
 
 }
