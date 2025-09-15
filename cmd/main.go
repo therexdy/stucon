@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"stucon.ramanalabs.in/internal"
 )
@@ -13,7 +16,6 @@ func main(){
 		fmt.Println("InitConn Failed", err)
 		return
 	}
-	defer s.CloseConn()
 
 	mux := http.NewServeMux()
 
@@ -33,7 +35,14 @@ func main(){
 //		http.Error(w, "Not Allowed", http.StatusForbidden)
 //	})	
 
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGTERM, os.Interrupt)
+
 	port := "8080"
 	fmt.Println("Listening ", port)
-	http.ListenAndServe(":"+port, mux)
+	go 	http.ListenAndServe(":"+port, mux)
+
+	<-sigs	
+	fmt.Println("\nClosing DB Connections")
+	s.CloseConn()
 }
