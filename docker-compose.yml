@@ -6,10 +6,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./stucon:/app
+      - ./public:/app/public
     working_dir: /app/cmd
-    command: go run main.go
-
+    command: ./stucon
 networks:
   deployment_stucon:
     external: true
