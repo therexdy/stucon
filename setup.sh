@@ -9,7 +9,7 @@ chmod +x deployment/dir_setup.sh
 echo "Cloning Repo:"
 mkdir -p public
 cd ./public
-git clone https://github.com/Chiranthcs6/Website.git
+git clone https://github.com/Chiranthcs6/stucon_frontend.git
 mv Website/* Website/.* ./
 rmdir Website
 cd ..
