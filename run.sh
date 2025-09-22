@@ -23,7 +23,7 @@ cd ../
 podman-compose down
 
 if [ "$1" = "--build" ]; then
-  podman-compose up -d
-else
   podman-compose up --build -d
+else
+  podman-compose up -d
 fi
