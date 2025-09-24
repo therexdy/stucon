@@ -9,8 +9,9 @@ chmod +x deployment/dir_setup.sh
 echo "Cloning Repo:"
 mkdir -p public
 cd ./public
-git clone https://github.com/Chiranthcs6/stucon_frontend.git
-mv Website/* Website/.* ./
-rmdir Website
+git clone https://github.com/Chiranthcs6/stucon_Connect.git
+repo_name="stucon_Connect"
+mv $repo_name/* $repo_name/.* ./
+rmdir $repo_name
 cd ..
 echo "Setup Complete, now do bash run.sh to start the server."
