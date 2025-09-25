@@ -62,6 +62,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		defer result.Close()
+
 		var rowsArray []MaterialJSON
 		for result.Next(){
 			var temp MaterialJSON
@@ -72,6 +73,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			}
 			rowsArray = append(rowsArray, temp)
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(rowsArray)
 		if err != nil {
@@ -93,6 +95,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		defer result.Close()
+
 		var rowsArray []MaterialJSON
 		for result.Next(){
 			var temp MaterialJSON
@@ -103,6 +106,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			}
 			rowsArray = append(rowsArray, temp)
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(rowsArray)
 		if err != nil {
@@ -123,6 +127,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		defer result.Close()
+
 		var rowsArray []MaterialJSON
 		for result.Next(){
 			var temp MaterialJSON
@@ -133,6 +138,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			}
 			rowsArray = append(rowsArray, temp)
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(rowsArray)
 		if err != nil {
@@ -153,6 +159,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		defer result.Close()
+
 		var rowsArray []MaterialJSON
 		for result.Next(){
 			var temp MaterialJSON
@@ -163,6 +170,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			}
 			rowsArray = append(rowsArray, temp)
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(rowsArray)
 		if err != nil {
@@ -183,6 +191,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		defer result.Close()
+
 		var rowsArray []MaterialJSON
 		for result.Next(){
 			var temp MaterialJSON
@@ -193,6 +202,7 @@ func (s *Server) ExploreHandler(w http.ResponseWriter, r *http.Request){
 			}
 			rowsArray = append(rowsArray, temp)
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(rowsArray)
 		if err != nil {

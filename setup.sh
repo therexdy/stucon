@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-sudo apt update
+# update
 echo "Installing Dependencies"
-sudo apt install -y podman podman-compose 
+# install -y podman podman-compose 
 echo "Setting up dir structure"
 chmod +x deployment/dir_setup.sh
 ./deployment/dir_setup.sh

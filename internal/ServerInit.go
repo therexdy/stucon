@@ -30,7 +30,7 @@ func InitConn() (s *Server, err error){
 	})
 
 	s.Minio , err = minio.New("stucon_minio:9000", &minio.Options{
-		Creds:  credentials.NewStaticV4("appuser", "GTAC@gtac", ""),
+		Creds:  credentials.NewStaticV4("appuser", "GTAC@ramanalabs", ""),
 		Secure: false,
 	})
 	if err != nil {

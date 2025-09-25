@@ -1,13 +1,14 @@
-FROM docker.io/library/archlinux:latest
+FROM docker.io/library/golang:latest
 
-RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm go \
-    && pacman -Scc --noconfirm
-
-ENV GOPATH=/go
-ENV PATH=$GOPATH/bin:/usr/bin:$PATH
-
-COPY . /app
 WORKDIR /app
-RUN go mod tidy
-RUN go build -o /app/cmd/stucon /app/cmd/main.go
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -o ./cmd/stucon ./cmd/main.go
+
+EXPOSE 8080
+
+CMD ["./cmd/stucon"]

@@ -34,6 +34,7 @@ services:
     environment:
       MINIO_ROOT_USER: appuser
       MINIO_ROOT_PASSWORD: GTAC@ramanalabs
+      MINIO_DOMAIN=""
     volumes:
       - ./minio:/data
 

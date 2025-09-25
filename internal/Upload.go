@@ -23,7 +23,7 @@ type queryParams struct{
 
 func (s *Server) UploadHandler(w http.ResponseWriter, r *http.Request){
 
-	if r.Method != http.MethodPut {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Wrong Method", http.StatusMethodNotAllowed)
 		return
 	}
@@ -33,7 +33,7 @@ func (s *Server) UploadHandler(w http.ResponseWriter, r *http.Request){
 	err := psqlDB.Ping()
 	if err != nil {
 		fmt.Println("PSQL DB Ping Failed")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error " + err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (s *Server) UploadHandler(w http.ResponseWriter, r *http.Request){
 	q := r.URL.Query()
 	params.userId, err = strconv.Atoi(q.Get("user_id"))
 	if err != nil {
-		http.Error(w, "user_id param not of valid form", http.StatusBadRequest)
+		http.Error(w, "user_id param not of valid form "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	params.schemeId = q.Get("scheme_id")
@@ -49,7 +49,7 @@ func (s *Server) UploadHandler(w http.ResponseWriter, r *http.Request){
 	params.subjectId = q.Get("subject_id")
 	params.sem, err = strconv.Atoi(q.Get("sem"))
 	if err != nil {
-		http.Error(w, "sem param not of valid form", http.StatusBadRequest)
+		http.Error(w, "sem param not of valid form"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	params.title = q.Get("title")
@@ -73,12 +73,12 @@ func (s *Server) UploadHandler(w http.ResponseWriter, r *http.Request){
 	`
 	result , err := psqlDB.Exec(queryStr, params.userId, params.schemeId, params.branchId, params.subjectId, params.sem, params.title, fileName, params.fileType)
 	if err != nil {
-		http.Error(w, "DB Exec Error", http.StatusInternalServerError)
+		http.Error(w, "DB Exec Error " + err.Error(), http.StatusInternalServerError)
 		return
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected != 1{
-		http.Error(w, "DB Return Rows Error", http.StatusInternalServerError)
+		http.Error(w, "DB Return Rows Error " + err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -91,7 +91,7 @@ func (s *Server) UploadHandler(w http.ResponseWriter, r *http.Request){
 		minio.PutObjectOptions{ContentType: "application/octet-stream"},
 		)
 	if err != nil {
-		http.Error(w, "Upload Failed" + err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Upload Failed " + err.Error(), http.StatusInternalServerError)
 		return
 	}
 
